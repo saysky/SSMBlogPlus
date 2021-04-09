@@ -27,14 +27,6 @@ public interface CommentMapper extends BaseMapper<Comment> {
      * @param userId 用户Id
      * @return 影响行数
      */
-    Integer deleteByUserId(Long userId);
-
-    /**
-     * 根据用户Id删除
-     *
-     * @param userId 用户Id
-     * @return 影响行数
-     */
     Integer deleteByAcceptUserId(Long userId);
 
     /**

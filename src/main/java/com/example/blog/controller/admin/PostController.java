@@ -46,6 +46,9 @@ public class PostController extends BaseController {
     private UserService userService;
 
     @Autowired
+    private BlackWordService blackWordService;
+
+    @Autowired
     private TagService tagService;
 
     @Autowired
@@ -139,15 +142,27 @@ public class PostController extends BaseController {
     public JsonResult pushPost(@ModelAttribute Post post,
                                @RequestParam("cateId") Long cateId,
                                @RequestParam("tags") String tags) {
+        // 0.判断是否完整
+        if (StringUtils.isEmpty(post.getPostTitle()) || StringUtils.isEmpty(post.getPostContent())) {
+            return JsonResult.error("请输入完整信息");
+        }
 
-        // 1，检查分类和标签
+        // 1.判断评论内容是否包含屏蔽字
+        List<BlackWord> blackWordList = blackWordService.findAll();
+        for (BlackWord blackWord : blackWordList) {
+            if (post.getPostTitle().contains(blackWord.getContent()) || post.getPostContent().contains(blackWord.getContent())) {
+                return JsonResult.error("文章内容包含违规字符，禁止发布");
+            }
+        }
+
+        // 2，检验标签数量
         checkTags(tags);
 
-        // 2.获得登录用户
+        // 3.获得登录用户
         User user = getLoginUser();
         post.setUserId(getLoginUserId());
 
-        //3、非管理员只能修改自己的文章，管理员都可以修改
+        // 4、非管理员只能修改自己的文章，管理员都可以修改
         Post originPost = null;
         if (post.getId() != null) {
             originPost = postService.get(post.getId());
@@ -164,7 +179,7 @@ public class PostController extends BaseController {
             post.setCommentSize(originPost.getCommentSize());
             post.setDelFlag(originPost.getDelFlag());
         }
-        // 4、提取摘要
+        // 5、提取摘要
         int postSummary = 100;
         //文章摘要
         String summaryText = HtmlUtil.cleanHtmlTag(post.getPostContent());
@@ -175,7 +190,7 @@ public class PostController extends BaseController {
             post.setPostSummary(summaryText);
         }
 
-        // 5、分类标签
+        // 6、分类标签
         Category category = new Category();
         category.setId(cateId);
         post.setCategory(category);
@@ -184,10 +199,10 @@ public class PostController extends BaseController {
             post.setTagList(tagList);
         }
 
-        // 6.类型
+        // 7.类型
         post.setPostType(PostTypeEnum.POST_TYPE_POST.getValue());
 
-        // 7.添加/更新入库
+        // 8.添加/更新入库
         postService.insertOrUpdate(post);
         return JsonResult.success("发布成功");
     }
@@ -305,9 +320,8 @@ public class PostController extends BaseController {
         }
         //只有创建者有权删除
         User user = getLoginUser();
-        //管理员和文章作者可以删除
-        Boolean isAdmin = loginUserIsAdmin();
-        if (!Objects.equals(post.getUserId(), user.getId()) && !isAdmin) {
+        // 如果不属于互相关注的用户
+        if (!followService.isMutualFollowing(user.getId(), post.getUserId()) && !loginUserIsAdmin()) {
             throw new MyBusinessException("没有权限");
         }
     }

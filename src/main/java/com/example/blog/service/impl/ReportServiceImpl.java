@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 言曌
@@ -52,5 +54,12 @@ public class ReportServiceImpl implements ReportService {
         queryWrapper.eq("user_id", userId);
         queryWrapper.eq("status", status);
         return reportMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public Integer deleteByUserId(Long userId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("user_id", userId);
+        return reportMapper.deleteByMap(map);
     }
 }

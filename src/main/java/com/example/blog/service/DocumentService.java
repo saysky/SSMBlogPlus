@@ -2,18 +2,17 @@ package com.example.blog.service;
 
 
 import com.example.blog.common.base.BaseService;
-import com.example.blog.entity.PostMarkRef;
+import com.example.blog.entity.Document;
 
 /**
  * <pre>
- *     文章收藏业务逻辑接口
+ *     友情链接业务逻辑接口
  * </pre>
  *
- * @author : saysky
- * @date : 2017/11/14
+ * @author saysky
+ * @date 2021/3/20
  */
-public interface PostMarkRefService extends BaseService<PostMarkRef, Long> {
-
+public interface DocumentService extends BaseService<Document, Long> {
 
     /**
      * 根据用户ID删除

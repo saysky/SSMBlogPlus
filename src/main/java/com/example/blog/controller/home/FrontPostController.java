@@ -235,5 +235,23 @@ public class FrontPostController extends BaseController {
         return JsonResult.success("收藏成功");
     }
 
+    /**
+     * 收藏问题
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/post/unmark", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResult unmark(@RequestParam("id") Long id) {
+        User user = getLoginUser();
+        if (user == null) {
+            return JsonResult.error("请先登录");
+        }
+
+        postService.deleteMark(id, user);
+        return JsonResult.success("取消收藏成功");
+    }
+
 
 }

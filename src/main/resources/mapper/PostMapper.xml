@@ -121,7 +121,6 @@
                 , post_tag_ref pt
             </if>
         <where>
-            p.post_status = 0 AND
             <if test="condition.cateId != null">
                 c.id = #{condition.cateId} AND
             </if>
@@ -162,7 +161,7 @@
             c.del_flag = 0 AND
             pc.del_flag = 0
         </where>
-        ORDER BY p.create_time DESC
+        ORDER BY p.is_sticky DESC, p.create_time DESC
     </select>
 
 </mapper>

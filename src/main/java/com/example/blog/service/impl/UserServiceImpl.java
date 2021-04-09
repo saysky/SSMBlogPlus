@@ -11,10 +11,7 @@ import com.example.blog.entity.User;
 import com.example.blog.enums.TrueFalseEnum;
 import com.example.blog.exception.MyBusinessException;
 import com.example.blog.mapper.UserMapper;
-import com.example.blog.service.CommentService;
-import com.example.blog.service.PostService;
-import com.example.blog.service.RoleService;
-import com.example.blog.service.UserService;
+import com.example.blog.service.*;
 import com.example.blog.util.Md5Util;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,18 +41,50 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private DocumentService documentService;
+
+    @Autowired
+    private ClockInService clockInService;
+
+    @Autowired
+    private PostLikeRefService postLikeRefService;
+
+    @Autowired
+    private PostMarkRefService postMarkRefService;
+
+    @Autowired
+    private ReportService reportService;
+
+    @Autowired
+    private FollowService followService;
+
+    @Autowired
+    private PhotoService photoService;
+
+    @Autowired
+    private PhotoCategoryService photoCategoryService;
+
     @Override
     public User findByUserName(String userName) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("user_name", userName);
-        return userMapper.selectOne(queryWrapper);
+        List<User> userList = userMapper.selectList(queryWrapper);
+        if (userList.size() > 0) {
+            return userList.get(0);
+        }
+        return null;
     }
 
     @Override
     public User findByEmail(String userEmail) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("user_email", userEmail);
-        return userMapper.selectOne(queryWrapper);
+        List<User> userList = userMapper.selectList(queryWrapper);
+        if (userList.size() > 0) {
+            return userList.get(0);
+        }
+        return null;
     }
 
     @Override
@@ -214,12 +243,18 @@ public class UserServiceImpl implements UserService {
         if (user != null) {
             //1.修改用户状态为已删除
             userMapper.deleteById(userId);
-            //2.修改用户和角色关联
+            //2.删除其他
             roleService.deleteByUserId(userId);
-            //3.删除其他
-            postService.deleteByUserId(userId);
             commentService.deleteByUserId(userId);
-
+            postService.deleteByUserId(userId);
+            documentService.deleteByUserId(userId);
+            clockInService.deleteByUserId(userId);
+            postLikeRefService.deleteByUserId(userId);
+            postMarkRefService.deleteByUserId(userId);
+            reportService.deleteByUserId(userId);
+            followService.deleteByUserId(userId);
+            photoCategoryService.deleteByUserId(userId);
+            photoService.deleteByUserId(userId);
         }
     }
 

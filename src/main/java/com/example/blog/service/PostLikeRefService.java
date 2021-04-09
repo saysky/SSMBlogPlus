@@ -14,4 +14,10 @@ import com.example.blog.entity.PostLikeRef;
  */
 public interface PostLikeRefService extends BaseService<PostLikeRef, Long> {
 
+    /**
+     * 根据用户ID删除
+     * @param userId
+     * @return
+     */
+    Integer deleteByUserId(Long userId);
 }

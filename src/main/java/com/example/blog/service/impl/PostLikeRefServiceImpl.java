@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -66,6 +68,13 @@ public class PostLikeRefServiceImpl implements PostLikeRefService {
     public List<PostLikeRef> findAll() {
         List<PostLikeRef> postLikeRefList = postLikeRefMapper.selectList(null);
         return postLikeRefList;
+    }
+
+    @Override
+    public Integer deleteByUserId(Long userId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("user_id", userId);
+        return postLikeRefMapper.deleteByMap(map);
     }
 
 }

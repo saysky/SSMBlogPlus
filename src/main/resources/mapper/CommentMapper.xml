@@ -43,15 +43,6 @@
             LIMIT #{limit}
     </select>
 
-    <delete id="deleteByUserId">
-       DELETE
-       FROM
-           comment
-       WHERE
-           user_id = #{value}
-            AND del_flag = 0
-    </delete>
-
     <delete id="deleteByAcceptUserId">
        DELETE
        FROM
@@ -126,5 +117,6 @@
             u.user_avatar
         FROM comment t, user u
         WHERE t.post_id = #{postId} AND t.user_id = u.id
+        and t.del_flag = 0 and u.del_flag = 0
     </select>
 </mapper>

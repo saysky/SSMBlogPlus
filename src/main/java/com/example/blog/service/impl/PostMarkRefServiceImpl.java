@@ -69,4 +69,10 @@ public class PostMarkRefServiceImpl implements PostMarkRefService {
         return postMarkRefList;
     }
 
+    @Override
+    public Integer deleteByUserId(Long userId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("user_id", userId);
+        return postMarkRefMapper.deleteByMap(map);
+    }
 }

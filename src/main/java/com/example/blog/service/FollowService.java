@@ -69,4 +69,11 @@ public interface FollowService extends BaseService<Follow, Long> {
      */
     boolean isMutualFollowing(Long fromUserId, Long toUserId);
 
+    /*
+     * 根据用户ID删除
+     * @param userId
+     * @return
+     */
+    Integer deleteByUserId(Long userId);
+
 }

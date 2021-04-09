@@ -10,7 +10,9 @@ import com.example.blog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -56,10 +58,6 @@ public class CommentServiceImpl implements CommentService {
         return queryWrapper;
     }
 
-    @Override
-    public Integer deleteByUserId(Long userId) {
-        return commentMapper.deleteByUserId(userId);
-    }
 
     @Override
     public Integer deleteByAcceptUserId(Long acceptId) {
@@ -107,6 +105,13 @@ public class CommentServiceImpl implements CommentService {
             update(comment);
         }
         return comment;
+    }
+
+    @Override
+    public Integer deleteByUserId(Long userId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("user_id", userId);
+        return commentMapper.deleteByMap(map);
     }
 
 

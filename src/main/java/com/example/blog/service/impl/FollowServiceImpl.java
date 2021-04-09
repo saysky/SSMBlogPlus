@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * <pre>
@@ -127,8 +126,23 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public boolean isMutualFollowing(Long fromUserId, Long toUserId) {
+        if (Objects.equals(fromUserId, toUserId)) {
+            return true;
+        }
         Follow follow = followMapper.getFollow(fromUserId, toUserId);
         Follow follow2 = followMapper.getFollow(toUserId, fromUserId);
         return follow != null && follow2 != null;
+    }
+
+    @Override
+    public Integer deleteByUserId(Long userId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("user_id", userId);
+        int num1 = followMapper.deleteByMap(map);
+
+        Map<String, Object> map2 = new HashMap<>();
+        map2.put("accept_user_id", userId);
+        int num2 = followMapper.deleteByMap(map2);
+        return num1 + num2;
     }
 }

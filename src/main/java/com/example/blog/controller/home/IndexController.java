@@ -2,6 +2,7 @@ package com.example.blog.controller.home;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.blog.controller.common.BaseController;
+import com.example.blog.dto.JsonResult;
 import com.example.blog.dto.PostQueryCondition;
 import com.example.blog.dto.QueryCondition;
 import com.example.blog.entity.*;
@@ -12,13 +13,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.locks.Condition;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +44,9 @@ public class IndexController extends BaseController {
     @Autowired
     private FollowService followService;
 
+    @Autowired
+    private ClockInService clockInService;
+
     /**
      * 最新文章
      *
@@ -60,11 +63,10 @@ public class IndexController extends BaseController {
                         @RequestParam(value = "sort", defaultValue = "isSticky desc, createTime") String sort,
                         @RequestParam(value = "order", defaultValue = "desc") String order,
                         @RequestParam(value = "keywords", required = false) String keywords,
-                        Model model) {
+                        Model model) throws UnsupportedEncodingException {
         if (StringUtils.isNotEmpty(keywords)) {
-            return "redirect:/post/search/" + StringUtils.trim(keywords);
+            return "redirect:/post/search/" + URLEncoder.encode(keywords.trim(), "UTF-8");
         }
-
         Page page = PageUtil.initMpPage(pageNumber, pageSize, sort, order);
         PostQueryCondition condition = new PostQueryCondition();
         condition.setPostType(PostTypeEnum.POST_TYPE_POST.getValue());
@@ -370,6 +372,8 @@ public class IndexController extends BaseController {
         Page<Follow> postPage = followService.findAll(page, new QueryCondition<>(condition));
         for (Follow follow : postPage.getRecords()) {
             follow.setAcceptUser(userService.get(follow.getUserId()));
+            follow.setIsMutualFollowing(followService.isMutualFollowing(follow.getUserId(), follow.getAcceptUserId()));
+
         }
         model.addAttribute("follows", postPage.getRecords());
         model.addAttribute("page", postPage);
@@ -378,5 +382,49 @@ public class IndexController extends BaseController {
         return "home/user_fans";
     }
 
+    /**
+     * 今日签到页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/clockIn")
+    public String clockInPage(Model model) {
+        Long userId = getLoginUserId();
+        boolean hasClockIn = false;
+        if (userId != null) {
+            ClockIn clockIn = clockInService.findByUserIdToday(userId);
+            hasClockIn = clockIn != null;
+        }
+        List<ClockIn> clockInList = clockInService.getRankToday();
+        Integer countToday = clockInService.countToday();
+        model.addAttribute("clockInList", clockInList);
+        model.addAttribute("countToday", countToday);
+        model.addAttribute("hasClockIn", hasClockIn);
+        return "home/clockin";
+    }
+
+    /**
+     * 签到
+     *
+     * @return
+     */
+    @RequestMapping(value = "/clockIn/add")
+    @ResponseBody
+    public JsonResult addClockIn(@RequestParam("heartValue") String heartValue) {
+        Long userId = getLoginUserId();
+        if (userId == null) {
+            return JsonResult.error("请先登录");
+        }
+        ClockIn clockIn = clockInService.findByUserIdToday(userId);
+        if (clockIn != null) {
+            return JsonResult.error("今日已签到了，明天再来吧！");
+        }
+        clockIn = new ClockIn();
+        clockIn.setHeartValue(heartValue);
+        clockIn.setUserId(userId);
+        clockIn.setCreateTime(new Date());
+        clockInService.insert(clockIn);
+        return JsonResult.success("签到成功");
+    }
 
 }

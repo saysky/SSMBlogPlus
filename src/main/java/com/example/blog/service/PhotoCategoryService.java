@@ -1,25 +1,23 @@
 package com.example.blog.service;
 
 import com.example.blog.common.base.BaseService;
-import com.example.blog.entity.Report;
+import com.example.blog.entity.PhotoCategory;
 
 import java.util.List;
 
 /**
  * @author 言曌
- * @date 2021/2/21 5:30 下午
+ * @date 2021/3/2 5:40 下午
  */
-
-public interface ReportService extends BaseService<Report, Long> {
+public interface PhotoCategoryService extends BaseService<PhotoCategory, Long> {
 
     /**
-     * 根据用户ID和状态查询
+     * 根据用户ID查询
      *
      * @param userId
-     * @param status
      * @return
      */
-    List<Report> findByUserIdAndStatus(Long userId, Integer status);
+    List<PhotoCategory> findByUserId(Long userId);
 
     /**
      * 根据用户ID删除
