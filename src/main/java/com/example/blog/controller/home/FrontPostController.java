@@ -146,7 +146,7 @@ public class FrontPostController extends BaseController {
     }
 
     /**
-     * 点踩文章
+     * 举报文章
      *
      * @param postId
      * @return
@@ -236,7 +236,7 @@ public class FrontPostController extends BaseController {
     }
 
     /**
-     * 收藏问题
+     * 收藏文章
      *
      * @param id
      * @return

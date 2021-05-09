@@ -3,6 +3,7 @@ package com.example.blog.controller.admin;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.blog.controller.common.BaseController;
 import com.example.blog.dto.JsonResult;
+import com.example.blog.dto.QueryCondition;
 import com.example.blog.entity.Report;
 import com.example.blog.entity.User;
 import com.example.blog.service.PostService;
@@ -47,7 +48,11 @@ public class ReportController extends BaseController {
                              @RequestParam(value = "sort", defaultValue = "createTime") String sort,
                              @RequestParam(value = "order", defaultValue = "desc") String order, Model model) {
         Page page = PageUtil.initMpPage(pageNumber, pageSize, sort, order);
-        Page<Report> reportPage = reportService.findAll(page);
+        QueryCondition queryCondition = new QueryCondition();
+        Report condition = new Report();
+        condition.setUserId(getLoginUserId());
+        queryCondition.setData(condition);
+        Page<Report> reportPage = reportService.findAll(page, queryCondition);
         for (Report report : reportPage.getRecords()) {
             report.setUser(userService.get(report.getUserId()));
             report.setPost(postService.get(report.getPostId()));

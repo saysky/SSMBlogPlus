@@ -341,7 +341,10 @@ public class PostController extends BaseController {
         }
         User user = getLoginUser();
         // 如果不属于互相关注的用户
-        if (!loginUserIsAdmin() && !followService.isMutualFollowing(user.getId(), post.getUserId())) {
+//        if (!loginUserIsAdmin() && !followService.isMutualFollowing(user.getId(), post.getUserId())) {
+//            throw new MyBusinessException("没有权限");
+//        }
+        if(!Objects.equals(user.getId(), post.getUserId())) {
             throw new MyBusinessException("没有权限");
         }
 

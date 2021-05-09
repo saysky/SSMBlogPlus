@@ -161,7 +161,6 @@
             c.del_flag = 0 AND
             pc.del_flag = 0
         </where>
-        ORDER BY p.is_sticky DESC, p.create_time DESC
     </select>
 
 </mapper>

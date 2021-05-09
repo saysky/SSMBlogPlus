@@ -79,7 +79,7 @@ public class FrontCategoryController extends BaseController {
         PostQueryCondition condition = new PostQueryCondition();
         condition.setCateId(cateId);
         Page<Post> postPage = postService.findPostByCondition(condition, page);
-        model.addAttribute("posts", postPage);
+        model.addAttribute("page", postPage);
         model.addAttribute("category", category);
         return "home/category_post";
     }

@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -41,7 +43,7 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private TagMapper tagMapper;
-    
+
     @Autowired
     private PostMarkRefMapper postMarkRefMapper;
 
@@ -50,6 +52,13 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostDisLikeRefMapper postDisLikeRefMapper;
+
+    @Autowired
+    private ReportMapper reportMapper;
+
+
+    @Autowired
+    private CommentMapper commentMapper;
 
 
     @Override
@@ -136,9 +145,24 @@ public class PostServiceImpl implements PostService {
     public void delete(Long postId) {
         Post post = this.get(postId);
         if (post != null) {
-            postTagRefMapper.deleteByPostId(postId);
-            postCategoryRefMapper.deleteByPostId(postId);
+            Map<String, Object> map = new HashMap<>();
+            map.put("post_id", postId);
+
             postMapper.deleteById(post.getId());
+            // 删除收藏
+            postMarkRefMapper.deleteByMap(map);
+            // 删除点赞
+            postLikeRefMapper.deleteByMap(map);
+            // 删除点踩
+            postDisLikeRefMapper.deleteByMap(map);
+            // 删除标签关联
+            postTagRefMapper.deleteByMap(map);
+            // 删除分类关联
+            postCategoryRefMapper.deleteByMap(map);
+            // 删除评论
+            commentMapper.deleteByMap(map);
+            // 删除反馈
+            reportMapper.deleteByMap(map);
         }
     }
 

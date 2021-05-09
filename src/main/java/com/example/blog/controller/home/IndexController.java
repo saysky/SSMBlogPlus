@@ -90,7 +90,7 @@ public class IndexController extends BaseController {
     @RequestMapping(value = "/post/hot", method = RequestMethod.GET)
     public String hot(@RequestParam(value = "page", defaultValue = "1") Integer pageNumber,
                       @RequestParam(value = "size", defaultValue = "10") Integer pageSize,
-                      @RequestParam(value = "sort", defaultValue = "commentSize desc, postViews") String sort,
+                      @RequestParam(value = "sort", defaultValue = "isSticky desc, commentSize desc, postViews") String sort,
                       @RequestParam(value = "order", defaultValue = "desc") String order,
                       Model model) {
 
@@ -260,12 +260,15 @@ public class IndexController extends BaseController {
         if (userId == null) {
             return "redirect:/login";
         }
+        condition.setUserId(userId);
         Page<PostMarkRef> postPage = postMarkRefService.findAll(page, new QueryCondition<>(condition));
 
         for (PostMarkRef postMarkRef : postPage.getRecords()) {
             Post post = postService.get(postMarkRef.getPostId());
-            post.setUser(userService.get(post.getUserId()));
-            postMarkRef.setPost(post);
+            if(post != null) {
+                post.setUser(userService.get(post.getUserId()));
+                postMarkRef.setPost(post);
+            }
         }
         model.addAttribute("page", postPage);
 
@@ -296,6 +299,7 @@ public class IndexController extends BaseController {
         if (userId == null) {
             return "redirect:/login";
         }
+        condition.setUserId(userId);
         Page<PostLikeRef> postPage = postLikeRefService.findAll(page, new QueryCondition<>(condition));
 
         for (PostLikeRef postLikeRef : postPage.getRecords()) {

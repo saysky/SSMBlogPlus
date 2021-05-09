@@ -24,8 +24,8 @@ import java.util.UUID;
  */
 public class FileUtil {
 
-        public final static String rootPath = "/Users/liuyanzhao/Desktop/uploads/";
-//    public final static String rootPath = "D:\\uploads\\";
+//        public final static String rootPath = "/Users/liuyanzhao/Desktop/uploads/";
+    public final static String rootPath = "D:\\uploads\\";
 
 
     /**
